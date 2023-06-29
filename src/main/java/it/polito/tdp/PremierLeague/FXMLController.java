@@ -5,9 +5,13 @@
 package it.polito.tdp.PremierLeague;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import it.polito.tdp.PremierLeague.model.Model;
+import it.polito.tdp.PremierLeague.model.Opponente;
+import it.polito.tdp.PremierLeague.model.Player;
+import it.polito.tdp.PremierLeague.model.TopPlayer;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -41,19 +45,73 @@ public class FXMLController {
 
     @FXML // fx:id="txtResult"
     private TextArea txtResult; // Value injected by FXMLLoader
+    
+    private boolean creaGrafo = false;
 
     @FXML
     void doCreaGrafo(ActionEvent event) {
-
+    	
+    	String input = this.txtGoals.getText();
+    	if (input =="") {
+    		this.txtResult.setText("Non e' stato inserito un valore");
+    	}
+    	Double goal = 0.0;
+    	try {
+    		goal = Double.parseDouble(input);
+    	}catch (NumberFormatException e) {
+    		txtResult.setText("Non e' stato inserito un valore valido");
+    		return ;
+    	}
+    	this.model.creaGrafo(goal);
+    	this.creaGrafo = true;
+    	this.txtResult.setText("Grafo Creato! \n#Vertici: "+ this.model.getNumVertici()+ "\n#Archi: " + this.model.getNumArchi()+"\n");
     }
 
     @FXML
     void doDreamTeam(ActionEvent event) {
+    	
+    	txtResult.clear();
+
+    	if (!this.creaGrafo) {
+    		txtResult.clear();
+    		txtResult.setText("Non e' stato creato un grafo");
+    	}
+    	
+    	String input = txtK.getText();
+    	
+    	int k = 0;
+    
+    	try {
+    		k = Integer.parseInt(input);
+    	}catch (NumberFormatException e) {
+    		txtResult.appendText("Errore");
+    		return;
+    	}
+    	
+    	List<Player> dream  = this.model.getDreamTeam(k);
+    	
+    	for (Player p : dream) {
+    		txtResult.appendText(p.toString() + "\n");
+    	}
 
     }
 
     @FXML
     void doTopPlayer(ActionEvent event) {
+    	
+    	if (!this.creaGrafo) {
+    		txtResult.clear();
+    		txtResult.setText("Non e' stato creato un grafo");
+    	}
+    	TopPlayer top = this.model.getTopPlayer();
+    	txtResult.appendText("Top player: " + top +"\n");
+    	txtResult.appendText("Avversari: \n");
+    	for (Opponente o : top.getOpponenti()) {
+    		
+    		txtResult.appendText(o.toString()+"\n");
+    		
+    	}
+    	
 
     }
 
